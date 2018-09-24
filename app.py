@@ -23,6 +23,13 @@ def get_all_entries():
         {'entries':entries},
         {"message": "Entries successfully fetched"}), 201)
 
+@app.route('/api/v1/entries/<int:entryid>', methods=['GET'])
+def get_specific_entry(entryid):
+    entry = [eid for eid in entries if eid['entryId'] == entryid]
+    return make_response(jsonify(
+        {'entry': entry[0]},
+        {"message": "Entry successfully fetched"}), 200)
+
 
 if __name__ == "__main__":
-    app.run(debug=True, port=5000)
+    app.run(debug=True, port=5008)
