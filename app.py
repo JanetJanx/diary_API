@@ -37,17 +37,29 @@ def get_specific_entry(entryid):
 
 @app.route('/api/v1/entries', methods=['POST'])
 def add_entry():
-    entrycontent = {
-        'entryId':entries[-1]['entryId'] + 1,
-        'title': request.get_json['title'],
-        'content':request.get_json['content'],
-        'time':get_timestamp()
-        }
-    entries.append(entrycontent)
+    try:
+        entrydata = request.get_json()
+        title = entrydata.get('title')
+        content = entrydata.get('content')
 
-    return make_response(jsonify(
-        {'entrycontent': entrycontent},
-        {'message': "Entry successfully added"}), 200)
+        entrycontent = {
+            "entryId":entries[-1]['entryId'] + 1,
+            "title": title,
+            "content":content,
+            "time":get_timestamp()
+            }
+
+        entries.append(entrycontent)
+
+        return make_response(jsonify(
+            {'entrycontent': entrycontent},
+            {'message': "Entry successfully added"}), 200)
+    
+
+    except (ValueError, KeyError, TypeError):
+        return make_response(jsonify(
+            {'message': "JSON Format Error"}), 400)
+
 
 if __name__ == "__main__":
     app.run(debug=True, port=5001)
