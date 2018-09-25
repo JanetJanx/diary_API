@@ -1,5 +1,8 @@
 from flask import Flask, jsonify, request, make_response
+from flask_restful import Resource, Api
+
 app = Flask(__name__)
+api = Api(app)
 
 entries = [
     {
@@ -17,12 +20,14 @@ entries = [
     }
         ]
 
-@app.route('/api/v1/entries', methods=['GET'])
-def get_all_entries():
-    return make_response(jsonify(
-        {'entries':entries},
-        {"message": "Entries successfully fetched"}), 201)
 
+class EntryView(Resource):
+    def get(self):
+        return make_response(jsonify(
+            {'entries':entries},
+            {"message": "Entries successfully fetched"}), 201)
+
+api.add_resource(EntryView, '/api/v1/entries', methods=['GET'])
 
 if __name__ == "__main__":
-    app.run(debug=True, port=5000)
+    app.run(debug=True, port=5001)
