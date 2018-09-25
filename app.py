@@ -61,6 +61,14 @@ class SpecificEntry(Resource):
             {'entry': entry[0]},
             {"message": "Entry successfully fetched"}), 200)
 
+    def delete(self, entryid):
+        entry = [eid for eid in entries if eid['entryId'] == entryid]
+        entries.remove(entry[0])
+        return make_response(jsonify(
+            {'entry': entry[0]},
+            {"message": "Entry successfully removed"}), 200)
+
+
     def put(self, entryid):
         entry = [entry for entry in entries if entry['entryId'] == entryid]
         try:
@@ -68,9 +76,9 @@ class SpecificEntry(Resource):
             title = entrydata.get('title')
             content = entrydata.get('content')
 
-            entry['entryid']['title'] = title
-            entry['entryid']['content'] = content
-            entry['entryid']['time'] = get_timestamp()
+            entry[0]['title'] = title
+            entry[0]['content'] = content
+            entry[0]['time'] = get_timestamp()
             
             return make_response(jsonify(
                 {'entry':entry[0]},
@@ -81,10 +89,10 @@ class SpecificEntry(Resource):
                 {'message': "JSON Format Error"}), 401)
 
 
-api.add_resource(SpecificEntry, '/api/v1/entries/<int:entryid>', methods=['PUT', 'GET'])
+api.add_resource(SpecificEntry, '/api/v1/entries/<int:entryid>', methods=['PUT', 'GET', 'DELETE'])
 
 api.add_resource(EntryView, '/api/v1/entries', methods=['POST', 'GET'] ) 
 
 
 if __name__ == "__main__":
-    app.run(debug=True, port=5004)
+    app.run(debug=True, port=5000)
