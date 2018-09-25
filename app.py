@@ -20,16 +20,18 @@ entries = [
         'time':'2018-09-21 10:1:09.318212'
     }
         ]
-
+"""get current time"""
 def get_timestamp():
     return datetime.now().strftime(("%Y-%m-%d %H:%M:%S"))
 
 class EntryView(Resource):
+    """get all available entries"""
     def get(self):
         return make_response(jsonify(
             {'entries':entries},
             {"message": "Entries successfully fetched"}), 201)
 
+    """add an entry"""
     def post(self):
         try:
             entrydata = request.get_json()
@@ -55,12 +57,15 @@ class EntryView(Resource):
 
 
 class SpecificEntry(Resource):
+
+    """get a specific entry"""
     def get(self, entryid):
         entry = [eid for eid in entries if eid['entryId'] == entryid]
         return make_response(jsonify(
             {'entry': entry[0]},
             {"message": "Entry successfully fetched"}), 200)
-
+    
+    """delete a specify entry"""
     def delete(self, entryid):
         entry = [eid for eid in entries if eid['entryId'] == entryid]
         entries.remove(entry[0])
@@ -68,7 +73,7 @@ class SpecificEntry(Resource):
             {'entry': entry[0]},
             {"message": "Entry successfully removed"}), 200)
 
-
+    """modify a specific entry"""
     def put(self, entryid):
         entry = [entry for entry in entries if entry['entryId'] == entryid]
         try:
