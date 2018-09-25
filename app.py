@@ -1,5 +1,8 @@
 from flask import Flask, jsonify, request, make_response
+from flask_restful import Resource, Api
+
 app = Flask(__name__)
+api = Api(app)
 
 entries = [
     {
@@ -17,19 +20,23 @@ entries = [
     }
         ]
 
-@app.route('/api/v1/entries', methods=['GET'])
-def get_all_entries():
-    return make_response(jsonify(
-        {'entries':entries},
-        {"message": "Entries successfully fetched"}), 201)
+class EntryView(Resource):
+    def get(self):
+        return make_response(jsonify(
+            {'entries':entries},
+            {"message": "Entries successfully fetched"}), 201)
 
-@app.route('/api/v1/entries/<int:entryid>', methods=['GET'])
-def get_specific_entry(entryid):
-    entry = [eid for eid in entries if eid['entryId'] == entryid]
-    return make_response(jsonify(
-        {'entry': entry[0]},
-        {"message": "Entry successfully fetched"}), 200)
+class SpecificEntry(Resource):
+    def get(self, entryid):
+        entry = [eid for eid in entries if eid['entryId'] == entryid]
+        return make_response(jsonify(
+            {'entry': entry[0]},
+            {"message": "Entry successfully fetched"}), 200)
+
+
+api.add_resource(EntryView, '/api/v1/entries', methods=['GET'])
+api.add_resource(SpecificEntry, '/api/v1/entries/<int:entryid>', methods=['GET'])
 
 
 if __name__ == "__main__":
-    app.run(debug=True, port=5008)
+    app.run(debug=True, port=5004)
