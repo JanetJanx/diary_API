@@ -26,13 +26,16 @@ class Entry(dict):
         self.title = title
         self.content = content
         self.time = time
-    def __repr__(self):
-        entry_def = '{} {} {} {}'.format(self.entryId, self.title, self.content, self.time)
-        return json.dumps(entry_def)
+    def json(self):
+        return json.dumps({
+            'entryId': self.entryId,
+            'title': self.title,
+            'content': self.content,
+            'time': self.time
+        })
 
 
 class EntryView(Resource):
-    
     entries = []
     def get(self):
         return make_response(jsonify(
@@ -45,7 +48,9 @@ class EntryView(Resource):
             title = entrydata.get('title')
             content = entrydata.get('content')
             
-            EntryView.entries.append(Entry(increment_entryId(), title, content, get_timestamp()))
+            new_entry = Entry(increment_entryId(), title, content, get_timestamp())
+            entry = json.loads(new_entry.json())
+            EntryView.entries.append(entry)
 
             return make_response(jsonify(
                 {'entries': EntryView.entries},
