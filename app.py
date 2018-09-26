@@ -1,65 +1,69 @@
 from flask import Flask, jsonify, request, make_response
 from flask_restful import Resource, Api
+import json
+
 from datetime import datetime
 
 app = Flask(__name__)
 api = Api(app)
 
-entries = [
-    {
-        'entryId':1,
-        'title':'dictionary function',
-        'content':'using comprehenion',
-        'time':'2018-09-14 11:31:09.318212'
-        
-    },
-    {
-        'entryId':2,
-        'title':'bankaccount class',
-        'content':'class implementation corresponding to the provided tests',
-        'time':'2018-09-21 10:1:09.318212'
-    }
-        ]
-"""get current time"""
 def get_timestamp():
     return datetime.now().strftime(("%Y-%m-%d %H:%M:%S"))
 
+count = 0
+def increment_entryId():
+    global count
+    count = count + 1
+    return count
+
+class CounterfeitEntryError(Exception):
+    pass
+
+"""class to define the entry model and its operations"""   
+class Entry(dict):
+    def __init__(self, entryId, title, content, time):
+        self.entryId = entryId
+        self.title = title
+        self.content = content
+        self.time = time
+    def json(self):
+        return json.dumps({
+            'entryId': self.entryId,
+            'title': self.title,
+            'content': self.content,
+            'time': self.time
+        })
+
+
 class EntryView(Resource):
-    """get all available entries"""
+    entries = []
     def get(self):
         return make_response(jsonify(
-            {'entries':entries},
+            {'entries':EntryView.entries},
             {"message": "Entries successfully fetched"}), 201)
 
-    """add an entry"""
     def post(self):
         try:
             entrydata = request.get_json()
             title = entrydata.get('title')
             content = entrydata.get('content')
-
-            entrycontent = {
-                "entryId":entries[-1]['entryId'] + 1,
-                "title": title,
-                "content":content,
-                "time":get_timestamp()
-                }
-
-            entries.append(entrycontent)
+            
+            new_entry = Entry(increment_entryId(), title, content, get_timestamp())
+            entry = json.loads(new_entry.json())
+            EntryView.entries.append(entry)
 
             return make_response(jsonify(
-                {'entrycontent': entrycontent},
+                {'entries': EntryView.entries},
                 {'message': "Entry successfully added"}), 200)
-    
+
         except (ValueError, KeyError, TypeError):
             return make_response(jsonify(
                 {'message': "JSON Format Error"}), 400)
 
-
 class SpecificEntry(Resource):
-
-    """get a specific entry"""
+    """get specific entry"""
     def get(self, entryid):
+        entries = EntryView.entries
         entry = [eid for eid in entries if eid['entryId'] == entryid]
         return make_response(jsonify(
             {'entry': entry[0]},
@@ -67,15 +71,15 @@ class SpecificEntry(Resource):
     
     """delete a specify entry"""
     def delete(self, entryid):
-        entry = [eid for eid in entries if eid['entryId'] == entryid]
-        entries.remove(entry[0])
+        entry = [eid for eid in EntryView.entries if eid['entryId'] == entryid]
+        EntryView.entries.remove(entry[0])
         return make_response(jsonify(
             {'entry': entry[0]},
             {"message": "Entry successfully removed"}), 200)
 
     """modify a specific entry"""
     def put(self, entryid):
-        entry = [entry for entry in entries if entry['entryId'] == entryid]
+        entry = [entry for entry in EntryView.entries if entry['entryId'] == entryid]
         try:
             entrydata = request.get_json()
             title = entrydata.get('title')
