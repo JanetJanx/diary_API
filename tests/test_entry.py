@@ -3,8 +3,6 @@ from datetime import datetime
 import os.path
 import sys
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
-from app import app_config
-from flask import request
 from app.entry.entryapp import app, get_timestamp
 from app.entry.models import Entry
 
