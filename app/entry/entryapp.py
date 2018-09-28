@@ -26,7 +26,7 @@ class GetAllEntries(Resource):
     def get(self):
         return make_response(jsonify(
             {'entries':GetAllEntries.entries},
-            {"message": "Entries successfully fetched"}), 201)
+            {"message": "Entries successfully fetched"}), 200)
 
 class AddNewEntry(Resource):
     def post(self):
