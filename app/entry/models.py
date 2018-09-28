@@ -1,4 +1,4 @@
-import json  
+import json
 
 class Entry:
     def __init__(self, entryId, title, content, time):
