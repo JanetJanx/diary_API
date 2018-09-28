@@ -11,3 +11,6 @@ This project is about the creation of a Dairy API with the following endpoints.
 
 ## To Get Started
 1. Clone the repo using git clone command via https
+
+## Hosted on Heroku
+[Diary API](https://limitless-anchorage-83587.herokuapp.com/api/v1/entries)
