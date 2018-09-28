@@ -82,11 +82,11 @@ class ModifySpecificEntry(Resource):
             entry[0]['title'] = title
             entry[0]['content'] = content
             entry[0]['time'] = get_timestamp()
-            
+
             return make_response(jsonify(
                 {'entry':entry[0]},
                 {'message': "Entry successfully updated"}), 201)
-                
+
         except (ValueError, KeyError, TypeError):
             return make_response(jsonify(
                 {'message': "JSON Format Error"}), 401)
