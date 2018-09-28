@@ -1,6 +1,5 @@
-import uuid
 import json
-"""class to define the entry model"""   
+
 class Entry:
     def __init__(self, entryId, title, content, time):
         self.entryId = entryId

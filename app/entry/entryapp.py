@@ -7,6 +7,7 @@ import sys
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 from entry.models import Entry
 app = Flask(__name__)
+app.config["DEBUG"] = True
 api = Api(app)
 
 def get_timestamp():
@@ -23,18 +24,19 @@ class CounterfeitEntryError(Exception):
 
 class GetAllEntries(Resource):
     entries = []
+    @classmethod
     def get(self):
         return make_response(jsonify(
             {'entries':GetAllEntries.entries},
-            {"message": "Entries successfully fetched"}), 201)
+            {"message": "Entries successfully fetched"}), 200)
 
 class AddNewEntry(Resource):
+    @classmethod
     def post(self):
         try:
             entrydata = request.get_json()
             title = entrydata.get('title')
             content = entrydata.get('content')
-            
             new_entry = Entry(increment_entryId(), title, content, get_timestamp())
             entry = json.loads(new_entry.json())
             GetAllEntries.entries.append(entry)
@@ -49,6 +51,7 @@ class AddNewEntry(Resource):
 
 class ViewSpecificEntry(Resource):
     """get specific entry"""
+    @classmethod
     def get(self, entryid):
         entries = GetAllEntries.entries
         entry = [eid for eid in entries if eid['entryId'] == entryid]
@@ -56,8 +59,9 @@ class ViewSpecificEntry(Resource):
             {'entry': entry[0]},
             {"message": "Entry successfully fetched"}), 200)
 
-class DeleteSpecificEntry(Resource):    
+class DeleteSpecificEntry(Resource):
     """delete a specify entry"""
+    @classmethod
     def delete(self, entryid):
         entry = [eid for eid in GetAllEntries.entries if eid['entryId'] == entryid]
         GetAllEntries.entries.remove(entry[0])
@@ -67,6 +71,7 @@ class DeleteSpecificEntry(Resource):
 
 class ModifySpecificEntry(Resource):
     """modify a specific entry"""
+    @classmethod
     def put(self, entryid):
         entry = [entry for entry in GetAllEntries.entries if entry['entryId'] == entryid]
         try:
@@ -77,11 +82,11 @@ class ModifySpecificEntry(Resource):
             entry[0]['title'] = title
             entry[0]['content'] = content
             entry[0]['time'] = get_timestamp()
-            
+
             return make_response(jsonify(
                 {'entry':entry[0]},
                 {'message': "Entry successfully updated"}), 201)
-                
+
         except (ValueError, KeyError, TypeError):
             return make_response(jsonify(
                 {'message': "JSON Format Error"}), 401)
@@ -93,4 +98,4 @@ api.add_resource(DeleteSpecificEntry, '/api/v1/entries/<int:entryid>', methods=[
 api.add_resource(ModifySpecificEntry, '/api/v1/entries/<int:entryid>', methods=['PUT'])
 
 if __name__ == "__main__":
-    app.run(debug=True, port=5004)
+    app.run(port=500)
