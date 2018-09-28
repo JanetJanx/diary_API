@@ -1,6 +1,6 @@
 # Diary API
 
-[![Build Status](https://travis-ci.org/Janet-Namutebi/diary_API.svg?branch=master)](https://travis-ci.org/Janet-Namutebi/diary_API)[![Coverage Status](https://coveralls.io/repos/github/Janet-Namutebi/diary_API/badge.svg?branch=master)](https://coveralls.io/github/Janet-Namutebi/diary_API?branch=master)
+[![Build Status](https://travis-ci.org/Janet-Namutebi/diary_API.svg?branch=master)](https://travis-ci.org/Janet-Namutebi/diary_API)[![Coverage Status](https://coveralls.io/repos/github/Janet-Namutebi/diary_API/badge.svg?branch=master)](https://coveralls.io/github/Janet-Namutebi/diary_API?branch=master)[![Maintainability](https://api.codeclimate.com/v1/badges/5bad10f763e44986e1c4/maintainability)](https://codeclimate.com/github/Janet-Namutebi/diary_API/maintainability)
 
 This project is about the creation of a Dairy API with the following endpoints.
 1. Get all entries
