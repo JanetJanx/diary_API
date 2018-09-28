@@ -13,9 +13,7 @@ class TestEndpoint(unittest.TestCase):
 
     def test_add_entry_successfully_with_post(self):
         entry_data = Entry.json(self.entry)
-        post_url = self.client.post('api/v1/entries',
-                                    data=entry_data,
-                                    content_type='application/json')  
+        post_url = self.client.post('api/v1/entries', data=entry_data, content_type='application/json')  
         self.assertEqual(post_url.status_code, 200)
 
     def test_get_all_entries(self):
