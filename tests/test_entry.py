@@ -3,17 +3,12 @@ from datetime import datetime
 import os.path
 import sys
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
-from app import app_config, app
-from flask import json, request
+from app import app_config
+from flask import request
 from app.entry.entryapp import app, get_timestamp
 from app.entry.models import Entry
 
 class TestEndpoint(unittest.TestCase):
-
-    def create_app(self):
-        app.config.from_object(app_config["testing"])
-        return app
-
     def setUp(self):
         self.client = app.test_client(self)
         self.entry = Entry(1, "open bank account", "used DFCU, registered with nation ID", "2018-09-27 08:44:01")
@@ -32,7 +27,6 @@ class TestEndpoint(unittest.TestCase):
 
     def test_get_timestamp(self):
         self.assertEqual(get_timestamp(), datetime.now().strftime(("%Y-%m-%d %H:%M:%S")))
-    
     
 if __name__ == "__main__":
     unittest.main()

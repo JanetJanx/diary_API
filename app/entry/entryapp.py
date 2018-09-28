@@ -7,6 +7,7 @@ import sys
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 from entry.models import Entry
 app = Flask(__name__)
+app.config["DEBUG"] = True
 api = Api(app)
 
 def get_timestamp():
@@ -93,4 +94,4 @@ api.add_resource(DeleteSpecificEntry, '/api/v1/entries/<int:entryid>', methods=[
 api.add_resource(ModifySpecificEntry, '/api/v1/entries/<int:entryid>', methods=['PUT'])
 
 if __name__ == "__main__":
-    app.run(debug=True, port=5004)
+    app.run(port=500)
