@@ -24,18 +24,19 @@ class CounterfeitEntryError(Exception):
 
 class GetAllEntries(Resource):
     entries = []
+    @classmethod
     def get(self):
         return make_response(jsonify(
             {'entries':GetAllEntries.entries},
             {"message": "Entries successfully fetched"}), 200)
 
 class AddNewEntry(Resource):
+    @classmethod
     def post(self):
         try:
             entrydata = request.get_json()
             title = entrydata.get('title')
             content = entrydata.get('content')
-            
             new_entry = Entry(increment_entryId(), title, content, get_timestamp())
             entry = json.loads(new_entry.json())
             GetAllEntries.entries.append(entry)
@@ -50,6 +51,7 @@ class AddNewEntry(Resource):
 
 class ViewSpecificEntry(Resource):
     """get specific entry"""
+    @classmethod
     def get(self, entryid):
         entries = GetAllEntries.entries
         entry = [eid for eid in entries if eid['entryId'] == entryid]
@@ -57,8 +59,9 @@ class ViewSpecificEntry(Resource):
             {'entry': entry[0]},
             {"message": "Entry successfully fetched"}), 200)
 
-class DeleteSpecificEntry(Resource):    
+class DeleteSpecificEntry(Resource):
     """delete a specify entry"""
+    @classmethod
     def delete(self, entryid):
         entry = [eid for eid in GetAllEntries.entries if eid['entryId'] == entryid]
         GetAllEntries.entries.remove(entry[0])
@@ -68,6 +71,7 @@ class DeleteSpecificEntry(Resource):
 
 class ModifySpecificEntry(Resource):
     """modify a specific entry"""
+    @classmethod
     def put(self, entryid):
         entry = [entry for entry in GetAllEntries.entries if entry['entryId'] == entryid]
         try:

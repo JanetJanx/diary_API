@@ -15,8 +15,7 @@ class TestEndpoint(unittest.TestCase):
         entry_data = Entry.json(self.entry)
         post_url = self.client.post('api/v1/entries',
                                     data=entry_data,
-                                    content_type='application/json'
-                                )  
+                                    content_type='application/json')  
         self.assertEqual(post_url.status_code, 200)
 
     def test_get_all_entries(self):
@@ -25,6 +24,6 @@ class TestEndpoint(unittest.TestCase):
 
     def test_get_timestamp(self):
         self.assertEqual(get_timestamp(), datetime.now().strftime(("%Y-%m-%d %H:%M:%S")))
-    
+
 if __name__ == "__main__":
     unittest.main()
