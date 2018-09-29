@@ -98,4 +98,4 @@ api.add_resource(DeleteSpecificEntry, '/api/v1/entries/<int:entryid>', methods=[
 api.add_resource(ModifySpecificEntry, '/api/v1/entries/<int:entryid>', methods=['PUT'])
 
 if __name__ == "__main__":
-    app.run()
+    app.run(port 5004)
