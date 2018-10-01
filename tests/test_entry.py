@@ -23,5 +23,16 @@ class TestEndpoint(unittest.TestCase):
     def test_get_timestamp(self):
         self.assertEqual(get_timestamp(), datetime.now().strftime(("%Y-%m-%d %H:%M:%S")))
 
+    def test_get_specific_entry(self):
+        self.entry.entryId = 1
+        specific_get_url = self.client.get('api/v1/entries/{}'.format(self.entry.entryId))
+        self.assertEqual(specific_get_url.status_code, 200)
+
+    def test_modify_entry_with_put_successfully(self):
+        entry_data = Entry.json(self.entry)
+        self.entry.entryId = 1
+        put_url = self.client.put('api/v1/entries/{}'.format(self.entry.entryId),data=entry_data,content_type='application/json')
+        self.assertEqual(put_url.status_code, 201)
+
 if __name__ == "__main__":
     unittest.main()
