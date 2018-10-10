@@ -1,15 +1,12 @@
 import unittest
 from datetime import datetime
-import os.path
-import sys
-sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 from app.entry.entryapp import app, get_timestamp
 from app.entry.models import Entry
 
 class TestEndpoint(unittest.TestCase):
     def setUp(self):
         self.client = app.test_client(self)
-        self.entry = Entry(1, "open bank account", "used DFCU, registered with nation ID", "2018-09-27 08:44:01")
+        self.entry = Entry("open bank account", "used DFCU, registered with nation ID", "2018-09-27 08:44:01")
 
     def test_add_entry_successfully_with_post(self):
         entry_data = Entry.json(self.entry)
