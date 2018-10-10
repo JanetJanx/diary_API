@@ -13,11 +13,6 @@ api = Api(app)
 def get_timestamp():
     return datetime.now().strftime(("%Y-%m-%d %H:%M:%S"))
 
-count = 0
-def increment_entryId():
-    global count
-    count = count + 1
-    return count
 
 class CounterfeitEntryError(Exception):
     pass
@@ -37,7 +32,7 @@ class AddNewEntry(Resource):
             entrydata = request.get_json()
             title = entrydata.get('title')
             content = entrydata.get('content')
-            new_entry = Entry(increment_entryId(), title, content, get_timestamp())
+            new_entry = Entry(title, content, get_timestamp())
             entry = json.loads(new_entry.json())
             GetAllEntries.entries.append(entry)
 
