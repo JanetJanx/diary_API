@@ -14,18 +14,20 @@ class TestEndpoint(unittest.TestCase):
         post_url = self.client.post('api/v1/entries',data=entry_data,content_type='application/json')
         self.assertEqual(post_url.status_code, 201)
 
-        if self.entry.title == entry_data.title:
-            self.assertEqual(post_url.status_code, 406)
-
         if self.entry.title.strip() == "" or len(self.entry.title.strip()) < 3:
-            self.assertEqual(post_url.status_code, 400)
+            self.assertEqual(post_url.json, [{"message": "Enter a valid tiltle please"}])
 
         if re.compile('[!@#$%^&*:;?><.0-9]').match(self.entry.title):
-            self.assertEqual(post_url.status_code, 400)
+            self.assertEqual(post_url.json, [{"message": "Title contains Invalid characters"}])
 
         for x in self.entry.title:
             if x.isdigit():
-                self.assertEqual(post_url.status_code, 400)
+                self.assertEqual(post_url.json, [{"message": "Title contains numbers"}])
+
+        entries = []
+        for entry in entries:
+            if entry['title'] == entries['title']:
+                self.assertEqual(post_url.json, [{"message": "Entry with the same title already exists "}])
 
     def test_get_all_entries(self):
         get_url = self.client.get('api/v1/entries')
