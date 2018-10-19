@@ -1,20 +1,31 @@
 import unittest
 from datetime import datetime
+<<<<<<< Updated upstream
 import os.path
 import sys
 sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 from app.entry.entryapp import app, get_timestamp
 from app.entry.models import Entry
+=======
+from app.entryapp import app, get_timestamp
+from app.models import Entry
+>>>>>>> Stashed changes
 
 class TestEndpoint(unittest.TestCase):
     def setUp(self):
         self.client = app.test_client(self)
-        self.entry = Entry(1, "open bank account", "used DFCU, registered with nation ID", "2018-09-27 08:44:01")
+        self.entry = Entry("open bank account", "used DFCU, registered with nation ID", "2018-09-27 08:44:01")
 
     def test_add_entry_successfully_with_post(self):
         entry_data = Entry.json(self.entry)
         post_url = self.client.post('api/v1/entries',data=entry_data,content_type='application/json')
-        self.assertEqual(post_url.status_code, 200)
+        self.assertEqual(post_url.status_code, 201)
+
+    def test_add_entry_with_unique_title(self):
+        entries = self.client.get('api/v1/entries')
+        for entry in entries:
+            if self.entry.title == entry['title']:
+                self.assertEqual(entries.status_code, 406)
 
     def test_get_all_entries(self):
         get_url = self.client.get('api/v1/entries')
