@@ -1,15 +1,8 @@
 import unittest
+import re
 from datetime import datetime
-<<<<<<< Updated upstream
-import os.path
-import sys
-sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
-from app.entry.entryapp import app, get_timestamp
-from app.entry.models import Entry
-=======
 from app.entryapp import app, get_timestamp
 from app.models import Entry
->>>>>>> Stashed changes
 
 class TestEndpoint(unittest.TestCase):
     def setUp(self):
@@ -22,10 +15,29 @@ class TestEndpoint(unittest.TestCase):
         self.assertEqual(post_url.status_code, 201)
 
     def test_add_entry_with_unique_title(self):
-        entries = self.client.get('api/v1/entries')
-        for entry in entries:
-            if self.entry.title == entry['title']:
-                self.assertEqual(entries.status_code, 406)
+        entry_data = Entry.json(self.entry)
+        post_url = self.client.post('api/v1/entries',data=entry_data,content_type='application/json')
+        if self.entry.title == entry_data.title:
+            self.assertEqual(post_url.status_code, 406)
+
+    def test_add_entry_with_invalid_title(self):
+        entry_data = Entry.json(self.entry)
+        post_url = self.client.post('api/v1/entries',data=entry_data,content_type='application/json')
+        if self.entry.title.strip() == "" or len(self.entry.title.strip()) < 3:
+            self.assertEqual(post_url.status_code, 400)
+
+    def test_add_entry_with_invalid_chars_in_title(self):
+        entry_data = Entry.json(self.entry)
+        post_url = self.client.post('api/v1/entries',data=entry_data,content_type='application/json')
+        if re.compile('[!@#$%^&*:;?><.0-9]').match(self.entry.title):
+            self.assertEqual(post_url.status_code, 400)
+
+    def test_add_entry_with_invalid_chars_in_title(self):
+        entry_data = Entry.json(self.entry)
+        post_url = self.client.post('api/v1/entries',data=entry_data,content_type='application/json')
+        for x in self.entry.title:
+            if x.isdigit():
+                self.assertEqual(post_url.status_code, 400)
 
     def test_get_all_entries(self):
         get_url = self.client.get('api/v1/entries')
@@ -43,7 +55,14 @@ class TestEndpoint(unittest.TestCase):
         entry_data = Entry.json(self.entry)
         self.entry.entryId = 1
         put_url = self.client.put('api/v1/entries/{}'.format(self.entry.entryId),data=entry_data,content_type='application/json')
-        self.assertEqual(put_url.status_code, 201)
+        self.assertEqual(put_url.status_code, 200)
+
+    def test_delete_entry_with_delete_successfully(self):
+        entry_data = Entry.json(self.entry)
+        self.entry.entryId = 1
+        delete_url = self.client.delete('api/v1/entries/{}'.format(self.entry.entryId),data=entry_data,content_type='application/json')
+        self.assertEqual(delete_url.status_code, 200)
+        self.assertIsNotNone(delete_url.json)
 
 if __name__ == "__main__":
     unittest.main()
