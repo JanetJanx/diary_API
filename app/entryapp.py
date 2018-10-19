@@ -5,7 +5,6 @@ from datetime import datetime
 from flask import Flask, jsonify, request, make_response
 from flask_restful import Resource, Api
 
-from config import app_config
 from app.models import Entry
 
 
@@ -21,9 +20,7 @@ class GetAllEntries(Resource):
     entries = []
     @classmethod
     def get(self):
-        return make_response(jsonify(
-            {'entries':GetAllEntries.entries},
-            {"message": "Entries successfully fetched"}), 200)
+        return make_response(jsonify({'entries':GetAllEntries.entries},{"message": "Entries successfully fetched"}), 200)
 
 class AddNewEntry(Resource):
     @classmethod
@@ -55,9 +52,7 @@ class AddNewEntry(Resource):
         entry = json.loads(new_entry.json())
         GetAllEntries.entries.append(entry)
 
-        return make_response(jsonify(
-            {'entries': entry},
-            {'message': "Entry successfully added"}), 201)
+        return make_response(jsonify({'entries': entry},{'message': "Entry successfully added"}), 201)
 
 
 class ViewSpecificEntry(Resource):
@@ -67,9 +62,7 @@ class ViewSpecificEntry(Resource):
         entries = GetAllEntries.entries
         for eid in entries:
             if eid['entryId'] == entryid:
-                return make_response(jsonify(
-                    {'entry': eid},
-                    {"message": "Entry successfully fetched"}), 200)
+                return make_response(jsonify({'entry': eid},{"message": "Entry successfully fetched"}), 200)
 
 class DeleteSpecificEntry(Resource):
     """delete a specify entry"""
@@ -78,9 +71,7 @@ class DeleteSpecificEntry(Resource):
         for eid in GetAllEntries.entries:
             if eid['entryId'] == entryid:
                 GetAllEntries.entries.remove(eid)
-        return make_response(jsonify(
-            {'entry': eid},
-            {"message": "Entry successfully removed"}), 200)
+        return make_response(jsonify({'entry': eid},{"message": "Entry successfully removed"}), 200)
 
 class ModifySpecificEntry(Resource):
     """modify a specific entry"""

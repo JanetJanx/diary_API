@@ -15,19 +15,19 @@ class TestEndpoint(unittest.TestCase):
         self.assertEqual(post_url.status_code, 201)
 
         if self.entry.title.strip() == "" or len(self.entry.title.strip()) < 3:
-            self.assertEqual(post_url.json, [{"message": "Enter a valid tiltle please"}])
+            self.assertEqual(post_url.json, {"message": "Enter a valid tiltle please"})
 
     def test_whether_title_contains_invalid_chars(self):
         entry_data = Entry.json(self.entry)
         post_url = self.client.post('api/v1/entries',data=entry_data,content_type='application/json')
         if re.compile('[!@#$%^&*:;?><.0-9]').match(self.entry.title):
-            self.assertEqual(post_url.json, [{"message": "Title contains Invalid characters"}])
+            self.assertEqual(post_url.json, {"message": "Title contains Invalid characters"})
 
     def test_whether_title_contains_numbers(self):
         for x in self.entry.title:
             if x.isdigit():
                 self.assertEqual(post_url.status_code, 400)
-                self.assertEqual(post_url.json, [{"message": "Title contains numbers"}])
+                self.assertEqual(post_url.json, {"message": "Title contains numbers"})
 
     def test_whether_title_is_unique(self):
         entry_data = Entry.json(self.entry)
@@ -36,7 +36,7 @@ class TestEndpoint(unittest.TestCase):
         for entry in self.entries:
             if entry['title'] == entry_data['title']:
                 self.assertEqual(post_url.status_code, 406)
-                self.assertEqual(post_url.json, [{"message": "Entry with the same title already exists "}])
+                self.assertEqual(post_url.json, {"message": "Entry with the same title already exists "})
 
     def test_get_all_entries(self):
         get_url = self.client.get('api/v1/entries')
