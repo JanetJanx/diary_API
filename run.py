@@ -1,5 +1,3 @@
-from flask import Flask
-
 from app.entryapp import app
 
 
