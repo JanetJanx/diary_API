@@ -27,11 +27,6 @@ class TestEndpoint(unittest.TestCase):
             if x.isdigit():
                 self.assertEqual(post_url.status_code, 400)
 
-    def test_add_entry_with_no_integers_in_title(self):
-        entry_data = Entry.json(self.entry)
-        post_url = self.client.post('api/v1/entries',data=entry_data,content_type='application/json')
-
-
     def test_get_all_entries(self):
         get_url = self.client.get('api/v1/entries')
         self.assertEqual(get_url.status_code, 200)
