@@ -16,7 +16,10 @@ class TestEndpoint(unittest.TestCase):
 
         if self.entry.title.strip() == "" or len(self.entry.title.strip()) < 3:
             self.assertEqual(post_url.json, [{"message": "Enter a valid tiltle please"}])
-    def
+
+    def test_whether_title_contains_invalid_chars(self):
+        entry_data = Entry.json(self.entry)
+        post_url = self.client.post('api/v1/entries',data=entry_data,content_type='application/json')
         if re.compile('[!@#$%^&*:;?><.0-9]').match(self.entry.title):
             self.assertEqual(post_url.json, [{"message": "Title contains Invalid characters"}])
 

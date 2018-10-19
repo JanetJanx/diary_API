@@ -11,15 +11,11 @@ from app.models import Entry
 
 app = Flask(__name__)
 app.config["DEBUG"] = True
-app.config.from_object(app_config['development'])
 api = Api(app)
 
 def get_timestamp():
     return datetime.now().strftime(("%Y-%m-%d %H:%M:%S"))
 
-
-class CounterfeitEntryError(Exception):
-    pass
 
 class GetAllEntries(Resource):
     entries = []
