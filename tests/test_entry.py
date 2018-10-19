@@ -14,19 +14,26 @@ class TestEndpoint(unittest.TestCase):
         post_url = self.client.post('api/v1/entries',data=entry_data,content_type='application/json')
         self.assertEqual(post_url.status_code, 201)
 
+    def test_whether_title_is_valid(self):
+        entry_data = Entry.json(self.entry)
+        self.entry.title = "ewery"
+        post_url = self.client.post('api/v1/entries',data=entry_data,content_type='application/json')
         if self.entry.title.strip() == "" or len(self.entry.title.strip()) < 3:
             self.assertEqual(post_url.json, {"message": "Enter a valid tiltle please"})
 
     def test_whether_title_contains_invalid_chars(self):
         entry_data = Entry.json(self.entry)
+        self.entry.title = "qw#"
         post_url = self.client.post('api/v1/entries',data=entry_data,content_type='application/json')
         if re.compile('[!@#$%^&*:;?><.0-9]').match(self.entry.title):
             self.assertEqual(post_url.json, {"message": "Title contains Invalid characters"})
 
     def test_whether_title_contains_numbers(self):
+        entry_data = Entry.json(self.entry)
+        post_url = self.client.post('api/v1/entries',data=entry_data,content_type='application/json')
         for x in self.entry.title:
             if x.isdigit():
-                self.assertEqual(post_url.status_code, 400)
+                self.assertEqual(post_url.status_code, 406)
                 self.assertEqual(post_url.json, {"message": "Title contains numbers"})
 
     def test_whether_title_is_unique(self):
