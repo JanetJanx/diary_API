@@ -18,14 +18,16 @@ class TestEndpoint(unittest.TestCase):
         self.ent = Entry("qr", "used DFCU, registered with nation ID", "2018-09-27 08:44:01")
         entry_data = Entry.json(self.ent)
         post_url = self.client.post('api/v1/entries',data=entry_data,content_type='application/json')
-        if self.ent.title.strip() == "" or len(self.ent.title.strip()) < 3:
+        title = str(self.ent.title).strip()
+        if not title or len(title) < 3:
             self.assertEqual(post_url.json, {"message": "Enter a valid tiltle please"})
 
     def test_whether_content_is_valid(self):
         self.ent = Entry("open account", "used DFCU", "2018-09-27 08:44:01")
         entry_data = Entry.json(self.ent)
         post_url = self.client.post('api/v1/entries',data=entry_data,content_type='application/json')
-        if self.ent.content.strip() == "" or len(self.ent.content.strip()) < 10:
+        content = str(self.ent.content).strip()
+        if not content or len(content) < 10:
             self.assertEqual(post_url.json, {"message": "Enter valid content please, with atleast 10 characters"})
 
     def test_whether_title_contains_invalid_chars(self):
@@ -74,6 +76,7 @@ class TestEndpoint(unittest.TestCase):
         self.entries = []
         for entry in self.entries:
             if entry['entryId'] == entryid:
+                self.entries.remove(entry)
                 delete_url = self.client.delete('api/v1/entries/{}'.format(entryid))
                 self.assertEqual(delete_url.status_code, 200)
                 self.assertIsNotNone(delete_url.json)
