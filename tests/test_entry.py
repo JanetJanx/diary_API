@@ -15,26 +15,25 @@ class TestEndpoint(unittest.TestCase):
         self.assertEqual(post_url.status_code, 201)
 
     def test_whether_title_is_valid(self):
-        entry_data = Entry.json(self.entry)
-        self.entry.title = "ewery"
+        self.ent = Entry("qr", "used DFCU, registered with nation ID", "2018-09-27 08:44:01")
+        entry_data = Entry.json(self.ent)
         post_url = self.client.post('api/v1/entries',data=entry_data,content_type='application/json')
-        if self.entry.title.strip() == "" or len(self.entry.title.strip()) < 3:
+        if self.ent.title.strip() == "" or len(self.ent.title.strip()) < 3:
             self.assertEqual(post_url.json, {"message": "Enter a valid tiltle please"})
 
-    def test_whether_title_contains_invalid_chars(self):
-        self.ent = Entry("qw#", "used DFCU, registered with nation ID", "2018-09-27 08:44:01")
+    def test_whether_content_is_valid(self):
+        self.ent = Entry("open account", "used DFCU", "2018-09-27 08:44:01")
         entry_data = Entry.json(self.ent)
-        self.entry.title = "qw#"
+        post_url = self.client.post('api/v1/entries',data=entry_data,content_type='application/json')
+        if self.ent.content.strip() == "" or len(self.ent.content.strip()) < 10:
+            self.assertEqual(post_url.json, {"message": "Enter valid content please, with atleast 10 characters"})
+
+    def test_whether_title_contains_invalid_chars(self):
+        self.ent = Entry("qr3w#", "used DFCU, registered with nation ID", "2018-09-27 08:44:01")
+        entry_data = Entry.json(self.ent)
         post_url = self.client.post('api/v1/entries',data=entry_data,content_type='application/json')
         if re.compile('[!@#$%^&*:;?><.0-9]').search(self.ent.title):
             self.assertEqual(post_url.json, {"message": "Title contains Invalid characters"})
-
-    def test_whether_title_contains_numbers(self):
-        entry_data = Entry.json(self.entry)
-        post_url = self.client.post('api/v1/entries',data=entry_data,content_type='application/json')
-        if self.entry.title.isalpha():
-            self.assertEqual(post_url.status_code, 400)
-            self.assertEqual(post_url.json, {"message": "Title contains numbers"})
 
     def test_whether_title_is_unique(self):
         entry_data = Entry.json(self.entry)
