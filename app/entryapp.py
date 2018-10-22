@@ -7,14 +7,12 @@ from flask_restful import Resource, Api
 
 from app.models import Entry
 
-
 app = Flask(__name__)
 app.config["DEBUG"] = True
 api = Api(app)
 
 def get_timestamp():
     return datetime.now().strftime(("%Y-%m-%d %H:%M:%S"))
-
 
 class GetAllEntries(Resource):
     entries = []
@@ -25,7 +23,6 @@ class GetAllEntries(Resource):
 class AddNewEntry(Resource):
     @classmethod
     def post(self):
-
         entrydata = request.get_json()
         title = str(entrydata.get('title')).strip()
         content = str(entrydata.get('content')).strip()
@@ -47,9 +44,7 @@ class AddNewEntry(Resource):
         new_entry = Entry(title, content, get_timestamp())
         entry = json.loads(new_entry.json())
         GetAllEntries.entries.append(entry)
-
         return make_response(jsonify({'entries': entry},{'message': "Entry successfully added"}), 201)
-
 
 class ViewSpecificEntry(Resource):
     """get specific entry"""
@@ -82,7 +77,6 @@ class ModifySpecificEntry(Resource):
             entrydata = request.get_json()
             title = entrydata.get('title')
             content = entrydata.get('content')
-
             entry['title'] = title
             entry['content'] = content
             entry['time'] = get_timestamp()
@@ -90,7 +84,6 @@ class ModifySpecificEntry(Resource):
             return make_response(jsonify(
                 {'entry':entry},
                 {'message': "Entry successfully updated"}), 200)
-
 
 api.add_resource(GetAllEntries, '/api/v1/entries', methods=['GET'])
 api.add_resource(AddNewEntry, '/api/v1/entries', methods=['POST'])
