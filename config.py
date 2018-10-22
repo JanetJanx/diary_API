@@ -1,6 +1,6 @@
 import os
 
-class BaseConfig(object):
+class BaseConfig:
     """
     Common configurations
     """
@@ -26,9 +26,7 @@ class ProductionConfig(BaseConfig):
     """
     Production configurations
     """
-
-    DEBUG = False
-
+    pass
 
 app_config = {
     'development': DevelopmentConfig,
