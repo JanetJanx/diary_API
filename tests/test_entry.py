@@ -1,7 +1,7 @@
 import unittest
 import re
 from datetime import datetime
-from app.entryapp import app, get_timestamp
+from app.entryapp import app, get_timestamp, ViewSpecificEntry
 from app.models import Entry
 
 class TestEndpoint(unittest.TestCase):
@@ -22,19 +22,19 @@ class TestEndpoint(unittest.TestCase):
             self.assertEqual(post_url.json, {"message": "Enter a valid tiltle please"})
 
     def test_whether_title_contains_invalid_chars(self):
-        entry_data = Entry.json(self.entry)
+        self.ent = Entry("qw#", "used DFCU, registered with nation ID", "2018-09-27 08:44:01")
+        entry_data = Entry.json(self.ent)
         self.entry.title = "qw#"
         post_url = self.client.post('api/v1/entries',data=entry_data,content_type='application/json')
-        if re.compile('[!@#$%^&*:;?><.0-9]').match(self.entry.title):
+        if re.compile('[!@#$%^&*:;?><.0-9]').search(self.ent.title):
             self.assertEqual(post_url.json, {"message": "Title contains Invalid characters"})
 
     def test_whether_title_contains_numbers(self):
         entry_data = Entry.json(self.entry)
         post_url = self.client.post('api/v1/entries',data=entry_data,content_type='application/json')
-        for x in self.entry.title:
-            if x.isdigit():
-                self.assertEqual(post_url.status_code, 406)
-                self.assertEqual(post_url.json, {"message": "Title contains numbers"})
+        if self.entry.title.isalpha():
+            self.assertEqual(post_url.status_code, 400)
+            self.assertEqual(post_url.json, {"message": "Title contains numbers"})
 
     def test_whether_title_is_unique(self):
         entry_data = Entry.json(self.entry)
@@ -42,7 +42,7 @@ class TestEndpoint(unittest.TestCase):
         post_url = self.client.post('api/v1/entries',data=entry_data,content_type='application/json')
         for entry in self.entries:
             if entry['title'] == entry_data['title']:
-                self.assertEqual(post_url.status_code, 406)
+                self.assertEqual(post_url.status_code, 400)
                 self.assertEqual(post_url.json, {"message": "Entry with the same title already exists "})
 
     def test_get_all_entries(self):
@@ -53,22 +53,31 @@ class TestEndpoint(unittest.TestCase):
         self.assertEqual(get_timestamp(), datetime.now().strftime(("%Y-%m-%d %H:%M:%S")))
 
     def test_get_specific_entry(self):
-        self.entry.entryId = 1
-        specific_get_url = self.client.get('api/v1/entries/{}'.format(self.entry.entryId))
-        self.assertEqual(specific_get_url.status_code, 200)
+        entryid = 1
+        self.entries = []
+        specific_get_url = self.client.get('api/v1/entries/{}'.format(entryid))
+        for entry in self.entries:
+            if entry['entryId'] == entryid:
+                self.assertEqual(specific_get_url.status_code, 200)
 
     def test_modify_entry_with_put_successfully(self):
-        entry_data = Entry.json(self.entry)
-        self.entry.entryId = 1
-        put_url = self.client.put('api/v1/entries/{}'.format(self.entry.entryId),data=entry_data,content_type='application/json')
-        self.assertEqual(put_url.status_code, 200)
+        entryid = 1
+        self.entries = []
+        self.ent = Entry("bank account", "used DFCU, registered with nation ID", "2018-09-27 08:44:01")
+        entry_data = Entry.json(self.ent)
+        for entry in self.entries:
+            if entry['entryId'] == entryid:
+                put_url = self.client.put('api/v1/entries/{}'.format(self.ent.entryId),data=entry_data,content_type='application/json')
+                self.assertEqual(put_url.status_code, 200)
 
     def test_delete_entry_with_delete_successfully(self):
-        entry_data = Entry.json(self.entry)
-        self.entry.entryId = 1
-        delete_url = self.client.delete('api/v1/entries/{}'.format(self.entry.entryId),data=entry_data,content_type='application/json')
-        self.assertEqual(delete_url.status_code, 200)
-        self.assertIsNotNone(delete_url.json)
+        entryid = 1
+        self.entries = []
+        for entry in self.entries:
+            if entry['entryId'] == entryid:
+                delete_url = self.client.delete('api/v1/entries/{}'.format(entryid))
+                self.assertEqual(delete_url.status_code, 200)
+                self.assertIsNotNone(delete_url.json)
 
 if __name__ == "__main__":
     unittest.main()
