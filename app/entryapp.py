@@ -26,7 +26,6 @@ class AddNewEntry(Resource):
         entrydata = request.get_json()
         title = str(entrydata.get('title')).strip()
         content = str(entrydata.get('content')).strip()
-
         #validation of entries
         if not title or len(title) < 3:
             return make_response(jsonify({"message": "Enter a valid tiltle please"}), 400)
@@ -44,7 +43,7 @@ class AddNewEntry(Resource):
         new_entry = Entry(title, content, get_timestamp())
         entry = json.loads(new_entry.json())
         GetAllEntries.entries.append(entry)
-        return make_response(jsonify({'entries': entry},{'message': "Entry successfully added"}), 201)
+        return make_response(jsonify({'entry': entry},{'message': "Entry successfully added"}), 201)
 
 class ViewSpecificEntry(Resource):
     """get specific entry"""
@@ -80,7 +79,6 @@ class ModifySpecificEntry(Resource):
             entry['title'] = title
             entry['content'] = content
             entry['time'] = get_timestamp()
-
             return make_response(jsonify(
                 {'entry':entry},
                 {'message': "Entry successfully updated"}), 200)
