@@ -27,26 +27,22 @@ class AddNewEntry(Resource):
     def post(self):
 
         entrydata = request.get_json()
-        title = entrydata.get('title')
-        content = entrydata.get('content')
+        title = str(entrydata.get('title')).strip()
+        content = str(entrydata.get('content')).strip()
 
         #validation of entries
-        if title.strip() == "" or len(title.strip()) < 3:
+        if not title or len(title) < 3:
             return make_response(jsonify({"message": "Enter a valid tiltle please"}), 400)
 
-        if re.compile('[!@#$%^&*:;?><.0-9]').match(title):
+        if re.compile('[!@#$%^&*:;?><.0-9]').search(title):
             return make_response(jsonify({"message": "Title contains Invalid characters"}), 400)
 
-        for i in title:
-            if i.isdigit():
-                return make_response(jsonify({"message": "Title contains numbers"}), 400)
-
-        if content.strip() == "" or len(content.strip()) < 10:
+        if not content or len(content) < 10:
             return make_response(jsonify({"message": "Enter valid content please, with atleast 10 characters"}), 400)
 
         for entry in GetAllEntries.entries:
             if entry['title'] == title:
-                return make_response(jsonify({"message": "Entry with the same title already exists "}), 406)
+                return make_response(jsonify({"message": "Entry with the same title already exists "}), 404)
 
         new_entry = Entry(title, content, get_timestamp())
         entry = json.loads(new_entry.json())
@@ -63,6 +59,7 @@ class ViewSpecificEntry(Resource):
         for eid in entries:
             if eid['entryId'] == entryid:
                 return make_response(jsonify({'entry': eid},{"message": "Entry successfully fetched"}), 200)
+            return make_response(jsonify({"message": "Entry doesn't exists "}), 404)
 
 class DeleteSpecificEntry(Resource):
     """delete a specify entry"""
@@ -71,7 +68,8 @@ class DeleteSpecificEntry(Resource):
         for eid in GetAllEntries.entries:
             if eid['entryId'] == entryid:
                 GetAllEntries.entries.remove(eid)
-        return make_response(jsonify({'entry': eid},{"message": "Entry successfully removed"}), 200)
+                return make_response(jsonify({'entry': eid},{"message": "Entry successfully removed"}), 200)
+            return make_response(jsonify({"message": "Entry doesn't exists "}), 404)
 
 class ModifySpecificEntry(Resource):
     """modify a specific entry"""
@@ -79,18 +77,19 @@ class ModifySpecificEntry(Resource):
     def put(self, entryid):
         #entry = [entry for entry in GetAllEntries.entries if entry['entryId'] == entryid]
         for entry in GetAllEntries.entries:
-            if entry['entryId'] == entryid:
-                entrydata = request.get_json()
-                title = entrydata.get('title')
-                content = entrydata.get('content')
+            if entry['entryId'] != entryid:
+                return make_response(jsonify({"message": "Entry with specified ID not found"}), 404)
+            entrydata = request.get_json()
+            title = entrydata.get('title')
+            content = entrydata.get('content')
 
-                entry['title'] = title
-                entry['content'] = content
-                entry['time'] = get_timestamp()
+            entry['title'] = title
+            entry['content'] = content
+            entry['time'] = get_timestamp()
 
-                return make_response(jsonify(
-                    {'entry':entry[0]},
-                    {'message': "Entry successfully updated"}), 200)
+            return make_response(jsonify(
+                {'entry':entry},
+                {'message': "Entry successfully updated"}), 200)
 
 
 api.add_resource(GetAllEntries, '/api/v1/entries', methods=['GET'])
