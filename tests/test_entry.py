@@ -8,21 +8,7 @@ class TestEndpoint(unittest.TestCase):
     def setUp(self):
         self.client = app.test_client(self)
         self.entry = Entry("open bank account", "used DFCU, registered with nation ID", "2018-09-27 08:44:01")
-        self.entries = [
-    {
-        'entryId':1,
-        'title':'dictionary function',
-        'content':'using comprehenion',
-        'time':'2018-09-14 11:31:09.318212'
-
-    },
-    {
-        'entryId':2,
-        'title':'bankaccount class',
-        'content':'class implementation corresponding to the provided tests',
-        'time':'2018-09-21 10:1:09.318212'
-    }
-        ]
+        self.entries = []
 
     def test_add_entry_successfully_with_post(self):
         entry_data = Entry.json(self.entry)
@@ -69,9 +55,10 @@ class TestEndpoint(unittest.TestCase):
 
     def test_get_specific_entry(self):
         for entry in self.entries:
-            if entry['entryId'] == 1:
+            if entry['entryId'] != 1:
                 specific_get_url = self.client.get('api/v1/entries/{}'.format(entry['entryId']))
-                self.assertIsNotNone(specific_get_url.json)
+                self.assertEqual(specific_get_url.json, [{'entry': entry},{"message": "Entry successfully fetched"}])
+            self.assertEqual(specific_get_url.json, {"message": "Entry doesn't exists "})
 
     def test_modify_entry_with_put_successfully(self):
         for entry in self.entries:
@@ -80,15 +67,17 @@ class TestEndpoint(unittest.TestCase):
                 entry['content'] = "used DFCU, registered with nation ID"
                 entry['time'] = get_timestamp()
                 put_url = self.client.put('api/v1/entries/{}'.format(entry['entryId']),data=entry,content_type='application/json')
-                self.assertIsNotNone(put_url.json)
+                self.assertEqual(put_url.json, [{'entry': entry}, {'message': "Entry successfully updated"}])
+            self.assertEqual(put_url.json, {"message": "Entry doesn't exists "})
+
 
     def test_delete_entry_with_delete_successfully(self):
-        entryid = 1
         for entry in self.entries:
-            if entry['entryId'] == entryid:
+            if entry['entryId'] == 1:
                 self.entries.remove(entry)
-                delete_url = self.client.delete('api/v1/entries/{}'.format(entryid))
-                self.assertIsNotNone(delete_url.json)
+                delete_url = self.client.delete('api/v1/entries/{}'.format(entry['entryId']))
+                self.assertEqual(delete_url.json, [{'entry': entry}, {"message": "Entry successfully removed"}])
+            self.assertEqual(put_url.json, {"message": "Entry with specified ID not found"})
 
 if __name__ == "__main__":
     unittest.main()
