@@ -1,5 +1,6 @@
 import unittest
 import re
+import requests
 from datetime import datetime
 from app.entryapp import app, get_timestamp
 from app.models import Entry
@@ -67,25 +68,30 @@ class TestEndpoint(unittest.TestCase):
     def test_modify_entry_with_put_successfully(self):
         entryid = 1
         self.entries = []
-        self.ent = Entry("DFCU bank account", "registered with nation ID", "2018-09-27 08:44:01")
-        entry_data = Entry.json(self.ent)
         for entry in self.entries:
             if entry['entryId'] == entryid:
+                self.ent = Entry("DFCU bank account", "registered with nation ID", get_timestamp())
+                entrydata = request.get_json()
+                title = entrydata.get('title')
+                content = entrydata.get('content')
+                entry_data = Entry.json(self.ent)
                 put_url = self.client.put('api/v1/entries/{}'.format(self.ent.entryId),data=entry_data,content_type='application/json')
                 self.assertEqual(put_url.status_code, 200)
                 self.assertEqual(put_url.json, {'message': "Entry successfully updated"})
-            self.assertEqual(put_url.status_code, 200)
-            self.assertEqual(put_url.json, {'message': "Entry successfully updated"})
+            self.assertEqual(put_url.status_code, 404)
+            self.assertEqual(put_url.json, {"message": "Entry doesn't exists "})
 
     def test_delete_entry_with_delete_successfully(self):
         entryid = 1
         self.entries = []
+        delete_url = self.client.delete('api/v1/entries/{}'.format(entryid))
         for entry in self.entries:
             if entry['entryId'] == entryid:
                 self.entries.remove(entry)
-                delete_url = self.client.delete('api/v1/entries/{}'.format(entryid))
                 self.assertEqual(delete_url.status_code, 200)
                 self.assertEqual(delete_url.json, {"message": "Entry successfully removed"})
+            self.assertEqual(delete_url.status_code, 404)
+            self.assertEqual(delete_url.json, {"message": "Entry doesn't exists "})
 
 if __name__ == "__main__":
     unittest.main()
