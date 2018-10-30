@@ -1,7 +1,7 @@
 import unittest
 import re
 from datetime import datetime
-from app.entryapp import app, get_timestamp, ViewSpecificEntry
+from app.entryapp import app, get_timestamp
 from app.models import Entry
 
 class TestEndpoint(unittest.TestCase):
