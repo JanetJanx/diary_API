@@ -2,4 +2,4 @@ diary
 __pycache__
 .vscode
 .coverage
-.pytest_cache
+*.pyc
