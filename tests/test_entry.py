@@ -57,6 +57,7 @@ class TestEndpoint(unittest.TestCase):
         for entry in self.entries:
             if entry['entryId'] == 1:
                 specific_get_url = self.client.get('api/v1/entries/{}'.format(entry['entryId']))
+                self.assertIsNotNone(specific_get_url.json)
                 self.assertEqual(specific_get_url.json, {"message": "Entry successfully fetched"})
                 self.assertEqual(specific_get_url.status_code, 200)
             self.assertEqual(specific_get_url.json, {"message": "Entry doesn't exists "})
@@ -68,6 +69,7 @@ class TestEndpoint(unittest.TestCase):
                 entry['content'] = "used DFCU, registered with nation ID"
                 entry['time'] = get_timestamp()
                 put_url = self.client.put('api/v1/entries/{}'.format(entry['entryId']),data=entry,content_type='application/json')
+                self.assertIsNotNone(put_url.json)
                 self.assertEqual(put_url.json, {'message': "Entry successfully updated"})
                 self.assertEqual(put_url.status_code, 200)
             self.assertEqual(put_url.json, {"message": "Entry doesn't exists "})
@@ -77,6 +79,7 @@ class TestEndpoint(unittest.TestCase):
             if entry['entryId'] == 1:
                 self.entries.remove(entry)
                 delete_url = self.client.delete('api/v1/entries/{}'.format(entry['entryId']))
+                self.assertIsNotNone(delete_url.json)
                 self.assertEqual(delete_url.json, {"message": "Entry successfully removed"})
                 self.assertEqual(delete_url.status_code, 200)
             self.assertEqual(put_url.json, {"message": "Entry with specified ID not found"})
